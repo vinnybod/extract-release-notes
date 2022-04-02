@@ -1798,12 +1798,59 @@ async function main() {
     const prerelease = core.getInput('prerelease')
     core.debug(`prerelease = '${prerelease}'`)
 
-    const releaseNotes = await extractReleaseNotes(changelogFile, prerelease)
+    let releaseNotes = ''
+    if (core.getInput('earliest_version')) {
+        core.debug('earliest-version = true')
+        const earliestVersion = core.getInput('earliest_version')
+        releaseNotes = await extractReleaseNotesMultiple(changelogFile, earliestVersion)
+    } else {
+        releaseNotes = await extractReleaseNotes(changelogFile, prerelease)
+    }
     core.debug(`release-notes = '${releaseNotes}'`)
 
     writeReleaseNotesFile(releaseNotesFile, releaseNotes)
 
     core.setOutput("release_notes", releaseNotes)
+}
+
+async function extractReleaseNotesMultiple(changelogFile, earliestVersion) {
+    const fileStream = fs.createReadStream(changelogFile, {encoding: encoding})
+    const rl = readline.createInterface({
+        input: fileStream
+    })
+    const lines = []
+    
+    let earliest_release_found = false
+    let start_of_releases = false
+    for await (const line of rl) {
+        if (!start_of_releases) {
+            const check_for_release_block = !!line.match("^#+ \\[[0-9]")
+            if (!check_for_release_block) {
+                core.debug(`skip line: '${line}'`)
+                continue
+            } else {
+                start_of_releases = true
+            }
+        }
+
+        const check_for_release_block = !!line.match("^#+ \\[[0-9]")
+        const earliest_release_block = !!line.match(`^#+ \\[(${earliestVersion})]`)
+        if (earliest_release_block) {
+            earliest_release_found = true
+            core.debug(`earliest release found. exiting after this block: '${line}'`)
+            lines.push(line)
+        } else if (check_for_release_block && earliest_release_found) {
+            core.debug(`next release found: '${line}'`)
+            break
+        } else {
+            lines.push(line)
+        }
+    }
+
+    let releaseNotes = lines.reduce((previousValue, currentValue) => previousValue + eol + currentValue)
+    releaseNotes = trimEmptyLinesTop(releaseNotes)
+    releaseNotes = trimEmptyLinesBottom(releaseNotes)
+    return releaseNotes
 }
 
 async function extractReleaseNotes(changelogFile, prerelease) {
