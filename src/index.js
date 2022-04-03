@@ -23,7 +23,9 @@ async function main() {
     let releaseNotes = ''
     if (core.getInput('earliest_version')) {
         core.debug('earliest-version = true')
-        const earliestVersion = core.getInput('earliest_version')
+        let earliestVersion = core.getInput('earliest_version')
+        // remove v prefix
+        earliestVersion = earliestVersion.replace(/^v/, '')
         releaseNotes = await extractReleaseNotesMultiple(changelogFile, earliestVersion)
     } else {
         releaseNotes = await extractReleaseNotes(changelogFile, prerelease)
