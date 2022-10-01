@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -19,7 +19,7 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '16'
-    - uses: actions/cache@v2.1.7
+    - uses: actions/cache@v3
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -50,7 +50,7 @@ jobs:
   intergration-test-1:
     strategy:
       matrix:
-        os: [ 'ubuntu-20.04', 'macos-11.0', 'windows-2022' ]
+        os: [ 'ubuntu-20.04', 'macos-12', 'windows-2022' ]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
@@ -68,7 +68,7 @@ jobs:
   intergration-test-2:
     strategy:
       matrix:
-        os: [ 'ubuntu-20.04', 'macos-11.0', 'windows-2022' ]
+        os: [ 'ubuntu-20.04', 'macos-12', 'windows-2022' ]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout

@@ -15,7 +15,7 @@ on:
 
 jobs:
   licensed:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     name: Check licenses
     steps:
     - name: Checkout
@@ -28,7 +28,7 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '16'
-    - uses: actions/cache@v2.1.7
+    - uses: actions/cache@v3
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
