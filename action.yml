@@ -18,7 +18,11 @@ inputs:
     required: false
     default: 'false'
   earliest_version:
-    description: 'provide the version number of the earliest release notes to include. This is used if you want to include multiple version ntoes in a single release'
+    description: 'provide the version number of the earliest release notes to include. This is used if you want to include multiple version notes in a single release'
+    required: false
+    default: ''
+  last_version:
+    description: 'provide the version number of the last release. All versions after this version will be included in the release notes. This is used if you want to include multiple version notes in a single release. Takes presedence over `earliest_version`'
     required: false
     default: ''
 outputs:
