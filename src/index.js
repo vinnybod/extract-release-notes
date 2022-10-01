@@ -25,10 +25,9 @@ async function main() {
         core.debug(`last-version = '${core.getInput('last_version')}'`)
         let lastVersion = core.getInput('last_version')
         // remove v prefix
-        earliestVersion = earliestVersion.replace(/^v/, '')
+        lastVersion = lastVersion.replace(/^v/, '')
         releaseNotes = await extractReleaseNotesMultiple(changelogFile, null, lastVersion)
-
-    if (core.getInput('earliest_version')) {
+    } else if (core.getInput('earliest_version')) {
         core.debug('earliest-version = true')
         let earliestVersion = core.getInput('earliest_version')
         // remove v prefix
@@ -85,7 +84,6 @@ async function extractReleaseNotesMultiple(changelogFile, earliestVersion, lastV
                 lines.push(line)
             }
         }
-
     }
 
     let releaseNotes = lines.reduce((previousValue, currentValue) => previousValue + eol + currentValue)
